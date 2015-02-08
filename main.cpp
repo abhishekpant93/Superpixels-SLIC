@@ -11,16 +11,26 @@ using namespace cv;
 int main(int argc, char* argv[]){
 
     if(argc != 2){
-        cout << "Usage: ./superpixels input.png" << endl;
+        cout << "Usage: ./superpixels <input_img>" << endl;
         return 0;
     }
 
     Mat img = imread(argv[1]);
+
+    if(!img.data){
+        cout << "Bad image ..." << endl;
+        return 0;
+    }
+    
     imshow("Original", img);
 
     Superpixels sp(img);
-    Mat superpixels = sp.getSuperpixelsImg();
-    imshow("Superpixel boundaries", superpixels);
+    
+    Mat boundaries = sp.viewSuperpixels();
+    imshow("Superpixel boundaries", boundaries);
+
+    Mat recolored = sp.colorSuperpixels();
+    imshow("Average superpixel colors", recolored);
     
     waitKey(0);
 

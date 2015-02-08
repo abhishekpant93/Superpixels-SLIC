@@ -6,10 +6,11 @@ Superpixels::Superpixels(Mat& img, float m, float S){
     this->img = img.clone();
     this->m = m;
     if(S == USE_DEFAULT_S){
-        int nx = 15, ny = 15;
-        float dx = img.cols / float(nx);
-        float dy = img.rows / float(ny);
-        this->S = (dx + dy + 1)/2;
+        this->nx = 15; // cols
+        this->ny = 15; // rows
+        this->dx = img.cols / float(nx); //steps
+        this->dy = img.rows / float(ny);
+        this->S = (dx + dy + 1)/2; // default window size
     }
     else
         this->S = S;
@@ -17,7 +18,7 @@ Superpixels::Superpixels(Mat& img, float m, float S){
     calculateSuperpixels();
 }
 
-Mat Superpixels::getSuperpixelsImg(){    
+Mat Superpixels::viewSuperpixels(){    
 
 	// Draw boundaries on original image
 	vector<Mat> rgb(3);
@@ -35,9 +36,42 @@ Mat Superpixels::getSuperpixelsImg(){
     return output;
 }
 
-// TODO
-Mat Superpixels::recolor(){
+Mat Superpixels::colorSuperpixels(){
+    
+    int n = nx * ny;
+    vector<Vec3b> avg_colors(n);
+    vector<int> num_pixels(n);
+    
+    vector<long> b(n), g(n), r(n);
+    
+    for(int y = 0; y < (int) labels.rows; ++y){
+        for(int x = 0; x < (int) labels.cols; ++x){
+
+            Vec3b pix = img.at<Vec3b>(y, x);
+            int lbl = labels.at<int>(y, x);
+            
+            b[lbl] += (int) pix[0];
+            g[lbl] += (int) pix[1];
+            r[lbl] += (int) pix[2];
+            
+            ++num_pixels[lbl];
+        }
+    }
+
+    for(int i = 0; i < n; ++i){
+        int num = num_pixels[i];
+        avg_colors[i] = Vec3b(b[i] / num, g[i] / num, r[i] / num);
+    }
+    
     Mat output = this->img.clone();
+    for(int y = 0; y < (int) output.rows; ++y){
+        for(int x = 0; x < (int) output.cols; ++x){
+            int lbl = labels.at<int>(y, x);
+            if(num_pixels[lbl])
+                output.at<Vec3b>(y, x) = avg_colors[lbl];
+        }
+    }
+    
     return output;
 }
 
@@ -55,16 +89,10 @@ void Superpixels::calculateSuperpixels(){
     // Convert to l-a-b colorspace
 	cvtColor(this->img_f, this->img_lab, CV_BGR2Lab);
 
-    int nx = 15;
-    int ny = 15;
     int n = nx * ny;
-    
     int w = img.cols;
     int h = img.rows;
     
-    float dx = w / float(nx);
-    float dy = h / float(ny);
-
 	for (int i = 0; i < ny; i++) {
 		for (int j = 0; j < nx; j++) {
 			this->centers.push_back( Point2f(j*dx+dx/2, i*dy+dy/2));
@@ -74,7 +102,7 @@ void Superpixels::calculateSuperpixels(){
 	// Initialize labels and distance maps
 	vector<int> label_vec(n);
 	for (int i = 0; i < n; i++)
-		label_vec[i] = i*255*255/n;
+        label_vec[i] = i*255*255/n;
 
 	Mat labels = -1*Mat::ones(this->img_lab.size(), CV_32S);
 	Mat dists = -1*Mat::ones(this->img_lab.size(), CV_32F);
@@ -112,8 +140,13 @@ void Superpixels::calculateSuperpixels(){
             }
 	}
 
-	// Calculate superpixel boundaries
+    // Store the labels for each pixel
+    this->labels = labels.clone();
+    this->labels =  n * this->labels / (255 * 255);
+
+    // Calculate superpixel boundaries
 	labels.convertTo(labels, CV_32F);
+
 	Mat gx, gy, grad;
 	filter2D(labels, gx, -1, sobel);
 	filter2D(labels, gy, -1, sobel.t());

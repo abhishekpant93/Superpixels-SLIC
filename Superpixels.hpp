@@ -18,22 +18,29 @@ class Superpixels{
 public:
     Superpixels(Mat& img, float m = DEFAULT_M, float S = USE_DEFAULT_S); // calculates the superpixel boundaries on construction
     
-    Mat getSuperpixelsImg(); // returns image displaying superpixel boundaries
+    Mat viewSuperpixels(); // returns image displaying superpixel boundaries
+    Mat colorSuperpixels(); // recolors image with average color in each cluster
     vector<vector<Point> > getSuperpixelContours(); // returns contours
-    Mat recolor(); // recolors image with average color in each cluster
     
 protected:
     Mat img; // original image
     Mat img_f; // scaled to [0,1]
     Mat img_lab; // converted to LAB colorspace
+
+    // used to store the calculated results
     Mat show;
+    Mat labels; 
+    
     float m; // compactness parameter
     float S; // window size
 
+    int nx, ny; // cols and rows
+    float dx, dy; // steps
+    
     vector<Point> centers; // superpixel centers
     
     void calculateSuperpixels();
-    float dist(Point p1, Point p2);
+    float dist(Point p1, Point p2); // 5-D distance between pixels in LAB space
 
     const static Mat sobel;
 };
