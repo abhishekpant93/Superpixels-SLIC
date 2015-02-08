@@ -7,6 +7,3 @@ SOURCES = Superpixels.cpp Superpixels.hpp main.cpp
 
 all : $(SOURCES)
 	g++ -g -std=c++11 $(OPENCV_CFLAGS) $(CFLAGS) -lm -o superpixels $(SOURCES) $(OPENCV_LIBS) $(LDFLAGS)	
-
-test: SLIC.cpp
-	g++ -g -std=c++11 $(OPENCV_CFLAGS) $(CFLAGS) -lm -o slic SLIC.cpp $(OPENCV_LIBS) $(LDFLAGS)	
