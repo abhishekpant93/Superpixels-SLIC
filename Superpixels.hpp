@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include <map>
 
 #define DEFAULT_M 20
 #define USE_DEFAULT_S -1
@@ -20,7 +21,8 @@ public:
     
     Mat viewSuperpixels(); // returns image displaying superpixel boundaries
     Mat colorSuperpixels(); // recolors image with average color in each cluster
-    vector<vector<Point> > getSuperpixelContours(); // returns contours
+    // map<int, Point>  getCentersMap(); // returns the labels and their cluster centers
+    vector<Point> getCenters();
     
 protected:
     Mat img; // original image

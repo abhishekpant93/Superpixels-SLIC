@@ -75,11 +75,20 @@ Mat Superpixels::colorSuperpixels(){
     return output;
 }
 
-// TODO
-vector<vector<Point> > Superpixels::getSuperpixelContours(){
-    vector<vector<Point> > contours;
-    return contours;
+vector<Point> Superpixels::getCenters(){
+    return centers;
 }
+
+// map<int, Point> Superpixels::getCentersMap(){
+
+//     map<int, Point> out;
+//     for(int i = 0; i < (int) centers.size(); ++i){
+//         Point p = centers[i];
+//         int lbl = labels.at<int>(p);
+//         out[lbl] = p;
+//     }
+//     return out;
+// }
 
 void Superpixels::calculateSuperpixels(){
 

@@ -37,6 +37,9 @@ int main(int argc, char* argv[]){
     Mat recolored = sp.colorSuperpixels();
     imshow("Average superpixel colors", recolored);
     imwrite("recolored.png", recolored);
+
+    // centers of the K clusters
+    vector<Point> centers = sp.getCenters();
     
     waitKey(0);
 
