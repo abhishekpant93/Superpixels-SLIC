@@ -22,7 +22,8 @@ public:
     Mat viewSuperpixels(); // returns image displaying superpixel boundaries
     Mat colorSuperpixels(); // recolors image with average color in each cluster
     // map<int, Point>  getCentersMap(); // returns the labels and their cluster centers
-    vector<Point> getCenters();
+    vector<Point> getCenters(); // centers indexed by label
+    Mat getLabels(); // per pixel label
     
 protected:
     Mat img; // original image

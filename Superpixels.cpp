@@ -79,6 +79,10 @@ vector<Point> Superpixels::getCenters(){
     return centers;
 }
 
+Mat Superpixels::getLabels(){
+    return labels;
+}
+
 // map<int, Point> Superpixels::getCentersMap(){
 
 //     map<int, Point> out;
